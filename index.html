@@ -3,66 +3,39 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Lumina Atlas brings mathematics, English, and future science and computing courses into one learning account.">
+  <meta name="description" content="Lumina Atlas is one place for connected courses, an AI learning assistant, and a cross-subject notebook.">
   <title>Lumina Atlas — Courses</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="atlas-shell.css">
   <link rel="stylesheet" href="auth.css">
   <link rel="stylesheet" href="notebook.css">
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="./" aria-label="Lumina Atlas home">
-      <span class="brand-mark">Σ</span>
-      <span>Lumina Atlas</span>
-    </a>
-    <nav class="actions" aria-label="Learning tools">
-      <button class="tool-button" type="button" data-notebook-open>▤ <span>Notebook</span></button>
-      <button class="profile-button" type="button" data-auth-open>Profile</button>
-    </nav>
-  </header>
-
+  <header class="atlas-topbar"><div class="atlas-topbar-inner">
+    <a class="atlas-brand" href="https://luminaatlas.com/" aria-label="Lumina Atlas home"><span class="atlas-brand-mark">Σ</span><span class="atlas-brand-name">Lumina Atlas</span></a>
+    <form class="atlas-search" role="search"><input id="atlas-search" type="search" placeholder="Search courses" aria-label="Search courses" autocomplete="off"></form>
+    <button class="atlas-tool" type="button" data-notebook-open><span class="atlas-tool-icon">▤</span><span class="atlas-tool-label">Notebook</span></button>
+    <button class="atlas-tool atlas-ai ai-tool" type="button" aria-expanded="false" aria-controls="portal-ai-panel"><span class="atlas-tool-icon">✦</span><span class="atlas-tool-label">AI</span></button>
+    <button class="atlas-tool atlas-profile" type="button" data-auth-open><span class="atlas-tool-icon">●</span><span class="atlas-tool-label">Profile</span></button>
+  </div></header>
+  <aside class="portal-ai-panel" id="portal-ai-panel" aria-hidden="true"><div><strong>Learning AI</strong><button type="button" aria-label="Close AI">×</button></div><p>Open a subject to ask questions with the current course page as context.</p></aside>
   <main>
-    <section class="intro" aria-labelledby="page-title">
-      <p class="eyebrow">COURSES</p>
-      <h1 id="page-title">Learn one connected system at a time.</h1>
-      <p>Choose a subject. Your account and notebook travel with you.</p>
-    </section>
-
+    <section class="intro" aria-labelledby="page-title"><p class="eyebrow">COURSES</p><h1 id="page-title">Lumina Atlas</h1><p>Choose a subject. Your account and notebook travel with you.</p></section>
     <section class="course-grid" aria-label="Available subjects">
-      <a class="course-card available math" href="https://math.luminaatlas.com">
-        <span class="course-icon">∑</span>
-        <span class="course-copy"><strong>Mathematics</strong><small>Interactive mathematics for AI and science</small></span>
-        <span class="course-status">Open →</span>
-      </a>
-      <a class="course-card available english" href="https://english.luminaatlas.com">
-        <span class="course-icon">Aa</span>
-        <span class="course-copy"><strong>English</strong><small>A structured system for understanding and use</small></span>
-        <span class="course-status">Open →</span>
-      </a>
-      <article class="course-card future">
-        <span class="course-icon">φ</span>
-        <span class="course-copy"><strong>Physics</strong><small>Coming later</small></span>
-      </article>
-      <article class="course-card future">
-        <span class="course-icon">⌬</span>
-        <span class="course-copy"><strong>Chemistry</strong><small>Coming later</small></span>
-      </article>
-      <article class="course-card future">
-        <span class="course-icon">&lt;/&gt;</span>
-        <span class="course-copy"><strong>Computer Science</strong><small>Coming later</small></span>
-      </article>
+      <a class="course-card available math" data-search="mathematics math ai science" href="https://math.luminaatlas.com/"><span class="course-icon">Σ</span><span class="course-copy"><strong>Mathematics</strong><small>Interactive mathematics for AI and science</small></span><span class="course-status">Open →</span></a>
+      <a class="course-card available english" data-search="english language" href="https://english.luminaatlas.com/"><span class="course-icon">Aa</span><span class="course-copy"><strong>English</strong><small>A structured English curriculum</small></span><span class="course-status">Open →</span></a>
     </section>
+    <p class="no-results" hidden>No matching course was found.</p>
   </main>
-
-  <footer>
-    <span>© <span id="year"></span> Lumina Atlas</span>
-    <nav aria-label="Legal"><a href="#">Privacy</a><a href="#">Terms</a></nav>
-  </footer>
-
-  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="auth-config.js"></script>
-  <script src="account.js?v=20260809-unified-auth"></script>
-  <script src="notebook.js"></script>
+  <footer><span>© <span id="year"></span> Lumina Atlas</span><nav aria-label="Legal"><a href="#">Privacy</a><a href="#">Terms</a></nav></footer>
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+    const search = document.getElementById("atlas-search"), cards = [...document.querySelectorAll(".course-card")];
+    search.addEventListener("input", () => { const query = search.value.trim().toLowerCase(); cards.forEach(card => card.hidden = Boolean(query && !card.dataset.search.includes(query))); document.querySelector(".no-results").hidden = cards.some(card => !card.hidden); });
+    const aiButton = document.querySelector(".ai-tool"), aiPanel = document.getElementById("portal-ai-panel");
+    const setAI = open => { aiPanel.classList.toggle("open", open); aiPanel.setAttribute("aria-hidden", String(!open)); aiButton.setAttribute("aria-expanded", String(open)); };
+    aiButton.addEventListener("click", () => setAI(!aiPanel.classList.contains("open"))); aiPanel.querySelector("button").addEventListener("click", () => setAI(false));
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-config.js"></script><script src="account.js?v=20260809-unified-auth"></script><script src="notebook.js"></script>
 </body>
 </html>
