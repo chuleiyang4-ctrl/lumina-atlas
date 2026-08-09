@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="atlas-shell.css">
   <link rel="stylesheet" href="auth.css">
   <link rel="stylesheet" href="notebook.css">
+  <link rel="stylesheet" href="math-ai.css">
 </head>
 <body>
   <header class="atlas-topbar"><div class="atlas-topbar-inner">
@@ -18,7 +19,7 @@
     <button class="atlas-tool atlas-ai ai-tool" type="button" aria-expanded="false" aria-controls="portal-ai-panel"><span class="atlas-tool-icon">✦</span><span class="atlas-tool-label">AI</span></button>
     <button class="atlas-tool atlas-profile" type="button" data-auth-open><span class="atlas-tool-icon">●</span><span class="atlas-tool-label">Profile</span></button>
   </div></header>
-  <aside class="portal-ai-panel" id="portal-ai-panel" aria-hidden="true"><div><strong>Learning AI</strong><button type="button" aria-label="Close AI">×</button></div><p>Open a subject to ask questions with the current course page as context.</p></aside>
+  <aside class="atlas-ai-panel" id="portal-ai-panel" data-ai-name="Learning AI" data-ai-endpoint="https://math.luminaatlas.com/api/math-ai" data-ai-intro="Ask across your courses or open a subject to share its current page." aria-hidden="true"></aside>
   <main>
     <section class="intro" aria-labelledby="page-title"><p class="eyebrow">COURSES</p><h1 id="page-title">Lumina Atlas</h1><p>Choose a subject. Your account and notebook travel with you.</p></section>
     <section class="course-grid" aria-label="Available subjects">
@@ -32,10 +33,7 @@
     document.getElementById("year").textContent = new Date().getFullYear();
     const search = document.getElementById("atlas-search"), cards = [...document.querySelectorAll(".course-card")];
     search.addEventListener("input", () => { const query = search.value.trim().toLowerCase(); cards.forEach(card => card.hidden = Boolean(query && !card.dataset.search.includes(query))); document.querySelector(".no-results").hidden = cards.some(card => !card.hidden); });
-    const aiButton = document.querySelector(".ai-tool"), aiPanel = document.getElementById("portal-ai-panel");
-    const setAI = open => { aiPanel.classList.toggle("open", open); aiPanel.setAttribute("aria-hidden", String(!open)); aiButton.setAttribute("aria-expanded", String(open)); };
-    aiButton.addEventListener("click", () => setAI(!aiPanel.classList.contains("open"))); aiPanel.querySelector("button").addEventListener("click", () => setAI(false));
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-config.js"></script><script src="account.js?v=20260809-unified-auth"></script><script src="notebook.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-config.js"></script><script src="account.js?v=20260809-unified-auth"></script><script src="notebook.js"></script><script src="atlas-ai.js"></script>
 </body>
 </html>
