@@ -146,7 +146,7 @@
     modal.hidden = true;
     modal.setAttribute("aria-hidden", "true");
     modal.innerHTML = `<section class="auth-card" role="dialog" aria-modal="true" aria-labelledby="auth-title">
-      <button class="auth-close" type="button" aria-label="Close sign in">脳</button><small>OPTIONAL ACCOUNT</small>
+      <button class="auth-close" type="button" aria-label="Close sign in">×</button><small>OPTIONAL ACCOUNT</small>
       <div class="auth-signed-out"><h2 id="auth-title">Sign in with Email</h2><p>Courses are open to everyone. Sign in to use your shared Notebook and sync learning data across subjects.</p>
       <form class="auth-email-form"><label for="auth-email">Email</label><input id="auth-email" type="email" autocomplete="email" required placeholder="you@example.com"><button type="submit">Email me a sign-in link</button></form><button class="auth-guest" type="button">Continue as guest</button></div>
       <div class="auth-signed-in" hidden><h2>You're signed in</h2><p class="auth-user-email"></p><p>Your Notebook and account are shared across Lumina Atlas subjects.</p><button class="auth-sign-out" type="button">Sign out</button></div><p class="auth-status" role="status"></p></section>`;
