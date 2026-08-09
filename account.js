@@ -2,9 +2,13 @@
   "use strict";
 
   const config = window.LEARNING_AUTH_CONFIG || window.MATH_AUTH_CONFIG || {};
-  const HUB_ORIGIN = "https://lumina-atlas.pages.dev";
+  const HUB_ORIGIN = "https://luminaatlas.com";
   const TRUSTED_ORIGINS = new Set([
     HUB_ORIGIN,
+    "https://www.luminaatlas.com",
+    "https://math.luminaatlas.com",
+    "https://english.luminaatlas.com",
+    "https://lumina-atlas.pages.dev",
     "https://math-ek4.pages.dev",
     "https://english-chi.pages.dev"
   ]);
