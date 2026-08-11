@@ -7,9 +7,9 @@
   <title>Lumina Atlas — Courses</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="atlas-shell.css">
-  <link rel="stylesheet" href="auth.css">
+  <link rel="stylesheet" href="auth.css?v=20260812-password-auth">
   <link rel="stylesheet" href="notebook.css">
-  <link rel="stylesheet" href="math-ai.css">
+  <link rel="stylesheet" href="math-ai.css?v=20260812-panel-header">
 </head>
 <body>
   <header class="atlas-topbar"><div class="atlas-topbar-inner">
@@ -28,12 +28,12 @@
     </section>
     <p class="no-results" hidden>No matching course was found.</p>
   </main>
-  <footer><span>© <span id="year"></span> Lumina Atlas</span><nav aria-label="Legal"><a href="#">Privacy</a><a href="#">Terms</a></nav></footer>
+  <footer><span>© <span id="year"></span> Lumina Atlas</span><nav aria-label="Legal"><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms</a><a href="refund.html">Refund Policy</a></nav></footer>
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
     const search = document.getElementById("atlas-search"), cards = [...document.querySelectorAll(".course-card")];
     search.addEventListener("input", () => { const query = search.value.trim().toLowerCase(); cards.forEach(card => card.hidden = Boolean(query && !card.dataset.search.includes(query))); document.querySelector(".no-results").hidden = cards.some(card => !card.hidden); });
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-config.js"></script><script src="account.js?v=20260809-unified-auth"></script><script src="notebook.js"></script><script src="atlas-ai.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-config.js"></script><script src="account.js?v=20260812-password-auth"></script><script src="notebook.js"></script><script src="atlas-ai.js?v=20260812-panel-header"></script>
 </body>
 </html>
