@@ -14,6 +14,7 @@
 <body>
   <header class="atlas-topbar"><div class="atlas-topbar-inner">
     <a class="atlas-brand" href="https://luminaatlas.com/" aria-label="Lumina Atlas home"><span class="atlas-brand-mark">Σ</span><span class="atlas-brand-name">Lumina Atlas</span></a>
+    <a class="atlas-tool atlas-pricing-link" href="#pricing">Pricing</a>
     <form class="atlas-search" role="search"><input id="atlas-search" type="search" placeholder="Search courses" aria-label="Search courses" autocomplete="off"></form>
     <button class="atlas-tool" type="button" data-notebook-open><span class="atlas-tool-icon">▤</span><span class="atlas-tool-label">Notebook</span></button>
     <button class="atlas-tool atlas-ai ai-tool" type="button" aria-expanded="false" aria-controls="portal-ai-panel"><span class="atlas-tool-icon">✦</span><span class="atlas-tool-label">AI</span></button>
@@ -27,13 +28,26 @@
       <a class="course-card available english" data-search="english language" href="https://english.luminaatlas.com/"><span class="course-icon">Aa</span><span class="course-copy"><strong>English</strong><small>A structured English curriculum</small></span><span class="course-status">Open →</span></a>
     </section>
     <p class="no-results" hidden>No matching course was found.</p>
+    <section class="pricing" id="pricing" aria-labelledby="pricing-title">
+      <div class="pricing-heading"><p class="eyebrow">PRICING</p><h2 id="pricing-title">Courses stay free. Pay only for more AI.</h2><p>All courses and Math Lab are free. Paid plans increase AI usage and Notebook capacity.</p></div>
+      <div class="billing-toggle" role="group" aria-label="Billing period"><button type="button" class="active" data-billing="monthly">Monthly</button><button type="button" data-billing="annual">Annual <span>Save 20%</span></button></div>
+      <div class="plan-grid">
+        <article class="plan-card"><p class="plan-name">Free</p><p class="plan-price"><strong>$0</strong><span>forever</span></p><ul><li>All courses and Math Lab</li><li>3 AI questions per day</li><li>30 AI questions per month</li><li>Basic Notebook access</li></ul><button type="button" class="plan-action secondary" data-auth-open>Start free</button></article>
+        <article class="plan-card featured"><p class="plan-badge">Most popular</p><p class="plan-name">Plus</p><p class="plan-price"><strong data-monthly="$10" data-annual="$96">$10</strong><span data-monthly="per month" data-annual="per year">per month</span></p><ul><li>15 AI questions per day</li><li>300 AI questions per month</li><li>AI tutor and file Q&amp;A</li><li>Cross-course AI answers</li></ul><button type="button" class="plan-action" data-checkout-plan="plus">Choose Plus</button></article>
+        <article class="plan-card"><p class="plan-name">Pro</p><p class="plan-price"><strong data-monthly="$20" data-annual="$192">$20</strong><span data-monthly="per month" data-annual="per year">per month</span></p><ul><li>50 AI questions per day</li><li>1,000 AI questions per month</li><li>Longer answers and context</li><li>Priority access to new AI tools</li></ul><button type="button" class="plan-action" data-checkout-plan="pro">Choose Pro</button></article>
+      </div><p class="pricing-note">Prices are in USD. Subscriptions renew automatically until cancelled. Applicable taxes are calculated at checkout. See our <a href="terms.html">Terms</a> and <a href="refund.html">Refund Policy</a>.</p>
+    </section>
   </main>
-  <footer><span>© <span id="year"></span> Lumina Atlas</span><nav aria-label="Legal"><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms</a><a href="refund.html">Refund Policy</a></nav></footer>
+  <footer><span>© <span id="year"></span> Lumina Atlas · <a href="mailto:chuleiyang4@gmail.com">chuleiyang4@gmail.com</a></span><nav aria-label="Legal"><a href="#pricing">Pricing</a><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms</a><a href="refund.html">Refund Policy</a></nav></footer>
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
     const search = document.getElementById("atlas-search"), cards = [...document.querySelectorAll(".course-card")];
     search.addEventListener("input", () => { const query = search.value.trim().toLowerCase(); cards.forEach(card => card.hidden = Boolean(query && !card.dataset.search.includes(query))); document.querySelector(".no-results").hidden = cards.some(card => !card.hidden); });
+    let billing = "monthly";
+    document.querySelectorAll("[data-billing]").forEach(button => button.addEventListener("click", () => { billing = button.dataset.billing; document.querySelectorAll("[data-billing]").forEach(item => item.classList.toggle("active", item === button)); document.querySelectorAll("[data-monthly][data-annual]").forEach(item => item.textContent = item.dataset[billing]); }));
+    document.querySelectorAll("[data-checkout-plan]").forEach(button => button.addEventListener("click", async () => { if (!window.LearningAuth?.isSignedIn?.()) return window.LearningAuth?.open?.(); button.disabled = true; const label = button.textContent; button.textContent = "Opening checkout…"; try { const session = await window.LearningAuth.getSession(); const response = await fetch("/api/billing/checkout", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ plan: button.dataset.checkoutPlan, billing }) }); const data = await response.json(); if (!response.ok) throw new Error(data.error || "Checkout is not ready yet."); location.href = data.url; } catch (error) { alert(error.message); button.disabled = false; button.textContent = label; } }));
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="auth-config.js"></script><script src="account.js?v=20260812-password-auth"></script><script src="notebook.js"></script><script src="atlas-ai.js?v=20260812-panel-header"></script>
 </body>
 </html>
+
