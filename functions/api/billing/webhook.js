@@ -39,6 +39,7 @@ export async function onRequestPost({ request, env }) {
     const userId = metadata.referenceId || object.request_id || object.checkout?.request_id;
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId || "");
     if (!isUuid) return reply("Accepted");
+    if (!new Set(["plus", "pro"]).has(metadata.plan)) return reply("Accepted");
 
     const subscription = object.subscription || object;
     const product = object.product || {};
