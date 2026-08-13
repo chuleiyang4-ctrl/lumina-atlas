@@ -27,33 +27,38 @@ async function saveSubscription(env, record) {
 }
 
 export async function onRequestPost({ request, env }) {
-  const rawBody = await request.text();
-  if (!await validSignature(rawBody, request.headers.get("creem-signature"), env.CREEM_WEBHOOK_SECRET)) {
-    return reply("Invalid signature", 401);
+  try {
+    const rawBody = await request.text();
+    if (!await validSignature(rawBody, request.headers.get("creem-signature"), env.CREEM_WEBHOOK_SECRET)) {
+      return reply("Invalid signature", 401);
+    }
+
+    const event = JSON.parse(rawBody);
+    const object = event.object || {};
+    const metadata = object.metadata || object.checkout?.metadata || {};
+    const userId = metadata.referenceId || object.request_id || object.checkout?.request_id;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(userId || "");
+    if (!isUuid) return reply("Accepted");
+
+    const subscription = object.subscription || object;
+    const product = object.product || {};
+    const activeEvents = new Set(["checkout.completed", "subscription.active", "subscription.paid", "subscription.trialing", "subscription.update"]);
+    const inactiveEvents = new Set(["subscription.canceled", "subscription.expired", "refund.created", "dispute.created"]);
+    if (!activeEvents.has(event.eventType) && !inactiveEvents.has(event.eventType)) return reply("Accepted");
+
+    await saveSubscription(env, {
+      user_id: userId,
+      provider: "creem",
+      provider_customer_id: object.customer?.id || object.customer || null,
+      provider_subscription_id: subscription.id || null,
+      product_id: product.id || object.order?.product || null,
+      plan: metadata.plan || product.name?.toLowerCase() || "free",
+      status: inactiveEvents.has(event.eventType) ? "inactive" : (subscription.status || "active"),
+      current_period_end: subscription.current_period_end_date || subscription.current_period_end || null,
+      updated_at: new Date().toISOString()
+    });
+    return reply("OK");
+  } catch (error) {
+    return reply("Webhook processing failed", 500);
   }
-
-  const event = JSON.parse(rawBody);
-  const object = event.object || {};
-  const metadata = object.metadata || object.checkout?.metadata || {};
-  const userId = metadata.referenceId || object.request_id || object.checkout?.request_id;
-  if (!userId) return reply("Accepted");
-
-  const subscription = object.subscription || object;
-  const product = object.product || {};
-  const activeEvents = new Set(["checkout.completed", "subscription.active", "subscription.paid", "subscription.trialing", "subscription.update"]);
-  const inactiveEvents = new Set(["subscription.canceled", "subscription.expired", "refund.created", "dispute.created"]);
-  if (!activeEvents.has(event.eventType) && !inactiveEvents.has(event.eventType)) return reply("Accepted");
-
-  await saveSubscription(env, {
-    user_id: userId,
-    provider: "creem",
-    provider_customer_id: object.customer?.id || object.customer || null,
-    provider_subscription_id: subscription.id || null,
-    product_id: product.id || object.order?.product || null,
-    plan: metadata.plan || product.name?.toLowerCase() || "free",
-    status: inactiveEvents.has(event.eventType) ? "inactive" : (subscription.status || "active"),
-    current_period_end: subscription.current_period_end_date || subscription.current_period_end || null,
-    updated_at: new Date().toISOString()
-  });
-  return reply("OK");
 }
